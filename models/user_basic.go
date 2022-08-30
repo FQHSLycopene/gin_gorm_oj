@@ -14,3 +14,12 @@ type UserBasic struct {
 func (tabel *UserBasic) TableName() string {
 	return "user_basic"
 }
+
+func GetUser(id int) (interface{}, error) {
+	data := UserBasic{}
+	err := DB.Omit("password").First(&data, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

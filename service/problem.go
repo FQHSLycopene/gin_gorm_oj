@@ -59,7 +59,7 @@ func GetProblemDetail(c *gin.Context) {
 			"data": nil,
 		})
 	}
-	data := models.GetProblemDetail(id)
+	data, err := models.GetProblemDetail(id)
 	c.JSON(200, gin.H{
 		"code": 200,
 		"msg":  "success",
