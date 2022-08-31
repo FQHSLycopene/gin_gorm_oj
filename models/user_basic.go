@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gin_gorm_oj/utils"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
 
 type UserBasic struct {
 	gorm.Model
@@ -22,4 +26,19 @@ func GetUser(id int) (interface{}, error) {
 		return nil, err
 	}
 	return data, nil
+}
+
+func Login(username, password string) (interface{}, error) {
+	data := UserBasic{}
+	err := DB.Where("name = ? AND password = ?", username, password).First(&data).Error
+	if err != nil {
+		return nil, err
+	}
+	token, err := utils.GenerateToken(data.Identity, data.Name)
+	if err != nil {
+		return nil, err
+	}
+	return gin.H{
+		"token": token,
+	}, nil
 }

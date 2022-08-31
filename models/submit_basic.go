@@ -33,7 +33,9 @@ func GetSubmitList(pagestr, sizestr, problemID, userID string) (interface{}, err
 	if err != nil {
 		return nil, errors.New("size 不是数字")
 	}
-	tx := DB.Model(&data).Preload("ProblemBasic").Preload("UserBasic")
+	tx := DB.Model(&data).Preload("ProblemBasic", func(db *gorm.DB) *gorm.DB {
+		return db.Omit("content")
+	})
 	if problemID != "" {
 		tx = tx.Where("problem_id = (SELECT id from problem_basic pb WHERE pb.id = ?)", problemID)
 	}
