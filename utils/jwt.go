@@ -1,15 +1,6 @@
 package utils
 
-import (
-	"crypto/md5"
-	"fmt"
-	"github.com/golang-jwt/jwt/v4"
-)
-
-//生成MD5
-func GetMd5(s string) string {
-	return fmt.Sprintf("%x", md5.Sum([]byte(s)))
-}
+import "github.com/golang-jwt/jwt/v4"
 
 var mySigningKey = []byte("gin_gorm_oj")
 

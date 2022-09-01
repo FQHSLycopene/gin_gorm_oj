@@ -74,4 +74,20 @@ paths:
       summary: 登录
       tags:
       - 公共方法
+  /SendCode:
+    post:
+      parameters:
+      - description: username
+        in: formData
+        name: Email
+        required: true
+        type: string
+      responses:
+        "200":
+          description: code":"200","msg":"","data",""}
+          schema:
+            type: string
+      summary: 发送验证码
+      tags:
+      - 公共方法
 swagger: "2.0"

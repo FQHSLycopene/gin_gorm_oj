@@ -129,6 +129,31 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/SendCode": {
+            "post": {
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "发送验证码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "Email",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\":\"200\",\"msg\":\"\",\"data\",\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     }
 }`
