@@ -4,20 +4,27 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"testing"
+	"time"
 )
 
 type User struct {
-	gorm.Model
-	Identity    string       `gorm:"type:varchar(36)"`
-	Name        string       `gorm:"type:varchar(255)"`
-	CreditCards []CreditCard `gorm:"foreignKey:UserIdentity;references:Identity"`
+	ID          uint `gorm:"primarykey" json:"id"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	Identity    string         `gorm:"type:varchar(36)"`
+	Name        string         `gorm:"type:varchar(255)"`
+	CreditCards []CreditCard   `gorm:"foreignKey:UserIdentity;references:Identity"`
 }
 
 type CreditCard struct {
-	gorm.Model
-	Identity     string `gorm:"type:varchar(36)"`
-	Name         string `gorm:"type:varchar(255)"`
-	UserIdentity string `gorm:"type:varchar(36)"`
+	ID           uint `gorm:"primarykey" json:"id"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	Identity     string         `gorm:"type:varchar(36)"`
+	Name         string         `gorm:"type:varchar(255)"`
+	UserIdentity string         `gorm:"type:varchar(36)"`
 }
 
 func TestGormTest(t *testing.T) {
