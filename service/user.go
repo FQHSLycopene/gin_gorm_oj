@@ -86,6 +86,23 @@ func SendCode(c *gin.Context) {
 		})
 		return
 	}
+	exist, err2 := models.EmailIsExist(Email)
+	if err2 != nil {
+		c.JSON(200, gin.H{
+			"code": 400,
+			"msg":  err2.Error(),
+			"data": nil,
+		})
+		return
+	}
+	if exist {
+		c.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "此邮箱已注册",
+			"data": nil,
+		})
+		return
+	}
 	code, err := models.GetCode(Email)
 	if err != nil {
 		c.JSON(200, gin.H{

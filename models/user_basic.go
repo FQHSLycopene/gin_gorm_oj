@@ -17,7 +17,7 @@ type UserBasic struct {
 	Mail     string `gorm:"column:mail;type:varchar(100)" json:"mail"`
 }
 
-func (tabel *UserBasic) TableName() string {
+func (table *UserBasic) TableName() string {
 	return "user_basic"
 }
 
@@ -81,4 +81,15 @@ func GetCode(email string) (string, error) {
 		return "", err
 	}
 	return code, nil
+}
+func EmailIsExist(email string) (bool, error) {
+	var total int64 = 0
+	err := DB.Where("mail = ?", email).Count(&total).First(&UserBasic{}).Error()
+	if err != nil {
+		return false, err
+	}
+	if total == 1 {
+		return true, nil
+	}
+	return false, nil
 }
