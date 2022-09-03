@@ -1,33 +1,6 @@
 info:
   contact: {}
 paths:
-  /GetProblemList:
-    get:
-      parameters:
-      - description: page
-        in: query
-        name: page
-        type: integer
-      - description: size
-        in: query
-        name: size
-        type: integer
-      - description: keyword
-        in: query
-        name: keyword
-        type: string
-      - description: category_id
-        in: query
-        name: category_id
-        type: string
-      responses:
-        "200":
-          description: code":"200","msg":"","data",""}
-          schema:
-            type: string
-      summary: 问题列表
-      tags:
-      - 公共方法
   /GetSubmitList:
     get:
       parameters:
@@ -74,10 +47,73 @@ paths:
       summary: 登录
       tags:
       - 公共方法
+  /Problem:
+    get:
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      - description: category_identity
+        in: query
+        name: category_identity
+        type: string
+      responses:
+        "200":
+          description: code":"200","msg":"","data",""}
+          schema:
+            type: string
+      summary: 问题列表
+      tags:
+      - 公共方法
+  /Register:
+    post:
+      parameters:
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: phone
+        in: formData
+        name: phone
+        required: true
+        type: string
+      - description: mail
+        in: formData
+        name: mail
+        required: true
+        type: string
+      - description: code
+        in: formData
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: code":"200","msg":"","data",""}
+          schema:
+            type: string
+      summary: 用户注册
+      tags:
+      - 公共方法
   /SendCode:
     post:
       parameters:
-      - description: username
+      - description: Email
         in: formData
         name: Email
         required: true

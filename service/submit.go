@@ -18,9 +18,9 @@ import (
 func GetSubmitList(c *gin.Context) {
 	page := c.DefaultQuery("page", define.DefaultPage)
 	size := c.DefaultQuery("size", define.DefaultSize)
-	problemID := c.Query("problem_id")
-	userID := c.Query("user_id")
-	data, err := models.GetSubmitList(page, size, problemID, userID)
+	problemIdentity := c.Query("problem_identity")
+	userIdentity := c.Query("user_identity")
+	data, err := models.GetSubmitList(page, size, problemIdentity, userIdentity)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 400,

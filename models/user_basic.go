@@ -1,9 +1,11 @@
 package models
 
 import (
+	"errors"
 	"gin_gorm_oj/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"time"
 )
 
 type UserBasic struct {
@@ -41,4 +43,42 @@ func Login(username, password string) (interface{}, error) {
 	return gin.H{
 		"token": token,
 	}, nil
+}
+
+func Register(name, password, phone, mail string) (interface{}, error) {
+	if name == "" || password == "" || phone == "" || mail == "" {
+		return nil, errors.New("参数不正确")
+	}
+	data := UserBasic{
+		Identity: utils.GetUUID(),
+		Name:     name,
+		Password: utils.GetMd5(password),
+		Mail:     mail,
+		Phone:    phone,
+	}
+	var total int64 = 0
+	DB.Where("name = ?", name).Count(&total)
+	if total != 0 {
+		return nil, errors.New("用户名已注册")
+	}
+	err := DB.Create(&data).Error
+	if err != nil {
+		return nil, err
+	}
+	token, err := utils.GenerateToken(data.Identity, data.Name)
+	if err != nil {
+		return nil, err
+	}
+	return gin.H{
+		"token": token,
+	}, nil
+}
+
+func GetCode(email string) (string, error) {
+	code := utils.GetCode()
+	err := RDB.Set(CTX, email, code, time.Minute*5).Err()
+	if err != nil {
+		return "", err
+	}
+	return code, nil
 }

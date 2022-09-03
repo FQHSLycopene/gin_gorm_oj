@@ -5,7 +5,6 @@ import (
 	"gin_gorm_oj/define"
 	"gin_gorm_oj/models"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 // @BasePath /api/v1
@@ -16,15 +15,15 @@ import (
 // @Param page query int false "page"
 // @Param size query int false "size"
 // @Param keyword query string false "keyword"
-// @Param category_id query string false "category_id"
+// @Param category_identity query string false "category_identity"
 // @Success 200 {string} json{"code":"200","msg":"","data",""}
-// @Router /GetProblemList [get]
+// @Router /Problem [get]
 func GetProblemList(c *gin.Context) {
 	page := c.DefaultQuery("page", define.DefaultPage)
 	size := c.DefaultQuery("size", define.DefaultSize)
 	keyword := c.Query("keyword")
-	category_id := c.Query("category_id")
-	data, err := models.GetProblemList(page, size, keyword, category_id)
+	categoryIdentity := c.Query("category_identity")
+	data, err := models.GetProblemList(page, size, keyword, categoryIdentity)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(200, gin.H{
@@ -50,16 +49,27 @@ func AddProblem(c *gin.Context) {
 	})
 }
 
+// GetProblemDetail
+// @Tags 公共方法
+// @Summary 问题详情
+// @Param page query int false "page"
+// @Param size query int false "size"
+// @Param keyword query string false "keyword"
+// @Param category_identity query string false "category_identity"
+// @Success 200 {string} json{"code":"200","msg":"","data",""}
+// @Router /Problem/:identity [get]
 func GetProblemDetail(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	identity := c.Param("identity")
+	println(identity)
+	data, err := models.GetProblemDetail(identity)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 400,
-			"msg":  "id 不是 int类型",
+			"msg":  err.Error(),
 			"data": nil,
 		})
+		return
 	}
-	data, err := models.GetProblemDetail(id)
 	c.JSON(200, gin.H{
 		"code": 200,
 		"msg":  "success",

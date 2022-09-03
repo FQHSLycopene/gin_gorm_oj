@@ -16,48 +16,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/GetProblemList": {
-            "get": {
-                "tags": [
-                    "公共方法"
-                ],
-                "summary": "问题列表",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "size",
-                        "name": "size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "keyword",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "category_id",
-                        "name": "category_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code\":\"200\",\"msg\":\"\",\"data\",\"\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/GetSubmitList": {
             "get": {
                 "tags": [
@@ -130,6 +88,101 @@ const docTemplate = `{
                 }
             }
         },
+        "/Problem": {
+            "get": {
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "问题列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "category_identity",
+                        "name": "category_identity",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\":\"200\",\"msg\":\"\",\"data\",\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/Register": {
+            "post": {
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "用户注册",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "phone",
+                        "name": "phone",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "mail",
+                        "name": "mail",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "code",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\":\"200\",\"msg\":\"\",\"data\",\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/SendCode": {
             "post": {
                 "tags": [
@@ -139,7 +192,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "username",
+                        "description": "Email",
                         "name": "Email",
                         "in": "formData",
                         "required": true
