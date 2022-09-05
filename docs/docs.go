@@ -207,6 +207,36 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/UserRank": {
+            "get": {
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "用户排行表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\":\"200\",\"msg\":\"\",\"data\",\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     }
 }`

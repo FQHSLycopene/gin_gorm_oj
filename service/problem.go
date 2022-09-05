@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gin_gorm_oj/define"
 	"gin_gorm_oj/models"
+	"gin_gorm_oj/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -43,21 +44,13 @@ func GetProblemList(c *gin.Context) {
 func AddProblem(c *gin.Context) {
 	data := models.ProblemBasic{}
 	c.ShouldBind(&data)
+	data.Identity = utils.GetUUID()
 	problem := models.AddProblem(&data)
 	c.JSON(200, gin.H{
 		"data": problem,
 	})
 }
 
-// GetProblemDetail
-// @Tags 公共方法
-// @Summary 问题详情
-// @Param page query int false "page"
-// @Param size query int false "size"
-// @Param keyword query string false "keyword"
-// @Param category_identity query string false "category_identity"
-// @Success 200 {string} json{"code":"200","msg":"","data",""}
-// @Router /Problem/:identity [get]
 func GetProblemDetail(c *gin.Context) {
 	identity := c.Param("identity")
 	println(identity)

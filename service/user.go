@@ -1,24 +1,17 @@
 package service
 
 import (
+	"gin_gorm_oj/define"
 	"gin_gorm_oj/models"
 	"gin_gorm_oj/utils"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 func GetUser(c *gin.Context) {
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(200, gin.H{
-			"code": 400,
-			"msg":  "id 不是 int类型",
-			"data": nil,
-		})
-		return
-	}
-	data, err := models.GetUser(id)
+	identity := c.Param("identity")
+
+	data, err := models.GetUser(identity)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 400,
@@ -77,8 +70,8 @@ func Login(c *gin.Context) {
 // @Success 200 {string} json{"code":"200","msg":"","data",""}
 // @Router /SendCode [Post]
 func SendCode(c *gin.Context) {
-	Email := c.PostForm("Email")
-	if Email == "" {
+	email := c.PostForm("Email")
+	if email == "" {
 		c.JSON(200, gin.H{
 			"code": 400,
 			"msg":  "邮箱不能为空",
@@ -86,7 +79,7 @@ func SendCode(c *gin.Context) {
 		})
 		return
 	}
-	exist, err2 := models.EmailIsExist(Email)
+	exist, err2 := models.EmailIsExist(email)
 	if err2 != nil {
 		c.JSON(200, gin.H{
 			"code": 400,
@@ -103,7 +96,7 @@ func SendCode(c *gin.Context) {
 		})
 		return
 	}
-	code, err := models.GetCode(Email)
+	code, err := models.GetCode(email)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 400,
@@ -112,7 +105,7 @@ func SendCode(c *gin.Context) {
 		})
 		return
 	}
-	err = utils.SendCode(code, Email)
+	err = utils.SendCode(code, email)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 400,
@@ -164,6 +157,32 @@ func Register(c *gin.Context) {
 		return
 	}
 	data, err := models.Register(name, password, phone, mail)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 400,
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "success",
+		"data": data,
+	})
+}
+
+// GetUserRank
+// @Tags 公共方法
+// @Summary 用户排行表
+// @Param page query string false "page"
+// @Param size query string false "size"
+// @Success 200 {string} json{"code":"200","msg":"","data",""}
+// @Router /UserRank [Get]
+func GetUserRank(c *gin.Context) {
+	page := c.DefaultQuery("page", define.DefaultPage)
+	size := c.DefaultQuery("size", define.DefaultSize)
+	data, err := models.GetUserRank(page, size)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 400,
