@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gin_gorm_oj/define"
 	"gin_gorm_oj/models"
-	"gin_gorm_oj/utils"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 // @BasePath /api/v1
@@ -41,13 +41,50 @@ func GetProblemList(c *gin.Context) {
 	})
 }
 
+// AddProblem
+// @Tags 管理员私有方法
+// @Summary 问题增加
+// @Param token header string true "token"
+// @Param title formData string true "title"
+// @Param content formData string true "content"
+// @Param max_runtime formData string true "max_runtime"
+// @Param max_memory formData string true "max_memory"
+// @Param category_identities formData array false "category_identities"
+// @Param test_cases formData array true "test_cases"
+// @Success 200 {string} json{"code":"200","msg":"","data",""}
+// @Router /Problem [Post]
 func AddProblem(c *gin.Context) {
-	data := models.ProblemBasic{}
-	c.ShouldBind(&data)
-	data.Identity = utils.GetUUID()
-	problem := models.AddProblem(&data)
+	title := c.PostForm("title")
+	content := c.PostForm("content")
+	maxRuntime := c.PostForm("max_runtime")
+	maxMemory := c.PostForm("max_memory")
+	categoryIdentitiesStr := c.PostForm("category_identities")
+	//testCases := c.PostForm("test_cases")
+
+	data, err := models.AddProblem(title, content, maxRuntime, maxMemory)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 400,
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	problemIdentity := data.(string)
+	categoryIdentities := strings.Split(categoryIdentitiesStr, ",")
+	for _, categoryIdentity := range categoryIdentities {
+		_, err := models.AddProblemCategory(problemIdentity, categoryIdentity)
+		if err != nil {
+			c.JSON(200, gin.H{
+				"code": 400,
+				"msg":  err.Error(),
+				"data": nil,
+			})
+			return
+		}
+	}
 	c.JSON(200, gin.H{
-		"data": problem,
+		"data": data,
 	})
 }
 

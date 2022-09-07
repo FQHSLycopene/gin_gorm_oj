@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"gin_gorm_oj/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"strconv"
@@ -11,8 +12,9 @@ type ProblemBasic struct {
 	gorm.Model
 	Identity          string             `gorm:"column:identity;type:varchar(36)" json:"identity"`                          //问题唯一表示
 	ProblemCategories []*ProblemCategory `gorm:"foreignKey:problem_identity;references:identity" json:"problem_categories"` //关联问题分类表
-	Title             string             `gorm:"column:title;type:varchar(255)" json:"title"`                               //文章标题
-	Content           string             `gorm:"column:content;type:text" json:"content"`                                   //
+	TestCases         []*TestCase        `gorm:"foreignKey:problem_identity;references:identity" json:"test_cases"`
+	Title             string             `gorm:"column:title;type:varchar(255)" json:"title"` //文章标题
+	Content           string             `gorm:"column:content;type:text" json:"content"`     //
 	PassNum           int                `gorm:"column:pass_num;type:int" json:"pass_num"`
 	TotalNum          int                `gorm:"column:total_num;type:int" json:"total_num"`
 	MaxRuntime        int                `gorm:"column:max_runtime;type:int(11)" json:"max_runtime"` //最大运行时长
@@ -34,7 +36,7 @@ func GetProblemList(pageStr, sizeStr, keyword, categoryIdentity string) (interfa
 	if err != nil {
 		return nil, errors.New("size 不是数字")
 	}
-	tx := DB.Model(data).Preload("ProblemCategories").Preload("ProblemCategories.CategoryBasic").
+	tx := DB.Model(data).Preload("ProblemCategories").Preload("ProblemCategories.CategoryBasic").Preload("TestCases").
 		Where(
 			"title like ? OR content like ?",
 			"%"+keyword+"%",
@@ -51,14 +53,29 @@ func GetProblemList(pageStr, sizeStr, keyword, categoryIdentity string) (interfa
 	}, nil
 }
 
-func AddProblem(problem *ProblemBasic) *ProblemBasic {
-	DB.Create(problem)
-	return problem
+func AddProblem(title, content, maxRuntimeStr, maxMemoryStr string) (interface{}, error) {
+	maxRuntime, err := strconv.Atoi(maxRuntimeStr)
+	if err != nil {
+		return nil, err
+	}
+	maxMemory, err := strconv.Atoi(maxMemoryStr)
+	if err != nil {
+		return nil, err
+	}
+	data := ProblemBasic{
+		Identity:   utils.GetUUID(),
+		Title:      title,
+		Content:    content,
+		MaxMem:     maxMemory,
+		MaxRuntime: maxRuntime,
+	}
+	DB.Create(&data)
+	return data.Identity, nil
 }
 
 func GetProblemDetail(identity string) (interface{}, error) {
 	data := ProblemBasic{}
-	err := DB.Preload("ProblemCategories").Preload("ProblemCategories.CategoryBasic").Where("identity = ?", identity).First(&data).Error
+	err := DB.Preload("ProblemCategories").Preload("ProblemCategories.CategoryBasic").Preload("TestCases").Where("identity = ?", identity).First(&data).Error
 	if err != nil {
 		return nil, err
 	}

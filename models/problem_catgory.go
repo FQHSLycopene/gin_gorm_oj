@@ -12,3 +12,15 @@ type ProblemCategory struct {
 func (table *ProblemCategory) TableName() string {
 	return "problem_category"
 }
+
+func AddProblemCategory(problemIdentity, categoryIdentity string) (interface{}, error) {
+	data := ProblemCategory{
+		ProblemIdentity:  problemIdentity,
+		CategoryIdentity: categoryIdentity,
+	}
+	err := DB.Create(&data).Error
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

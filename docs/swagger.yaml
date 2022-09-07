@@ -74,6 +74,50 @@ paths:
       summary: 问题列表
       tags:
       - 公共方法
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: content
+        in: formData
+        name: content
+        required: true
+        type: string
+      - description: max_runtime
+        in: formData
+        name: max_runtime
+        required: true
+        type: string
+      - description: max_memory
+        in: formData
+        name: max_memory
+        required: true
+        type: string
+      - description: category_identities
+        in: formData
+        name: category_identities
+        type: array
+      - description: test_cases
+        in: formData
+        name: test_cases
+        required: true
+        type: array
+      responses:
+        "200":
+          description: code":"200","msg":"","data",""}
+          schema:
+            type: string
+      summary: 问题增加
+      tags:
+      - 管理员私有方法
   /Register:
     post:
       parameters:
