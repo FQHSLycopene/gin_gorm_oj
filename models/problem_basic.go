@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gin_gorm_oj/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -59,7 +58,7 @@ func GetProblemList(pageStr, sizeStr, keyword, categoryIdentity string) (interfa
 	}, nil
 }
 
-func AddProblem(title, content, maxRuntimeStr, maxMemoryStr string, problemCategoriesStr, testCasesStr []string) (interface{}, error) {
+func AddProblem(title, content, maxRuntimeStr, maxMemoryStr string, categoryIdentitiesStr, testCasesStr []string) (interface{}, error) {
 	maxRuntime, err := strconv.Atoi(maxRuntimeStr)
 	if err != nil {
 		return nil, err
@@ -78,32 +77,34 @@ func AddProblem(title, content, maxRuntimeStr, maxMemoryStr string, problemCateg
 
 	//问题分类处理
 	var problemCategories []*ProblemCategory
-	for _, problemCategoryStr := range problemCategoriesStr {
+	for _, problemCategoryStr := range categoryIdentitiesStr {
 		problemCategory := ProblemCategory{
 			ProblemIdentity:  data.Identity,
 			CategoryIdentity: problemCategoryStr,
 		}
 		problemCategories = append(problemCategories, &problemCategory)
-		fmt.Println(problemCategory)
 	}
-
 	data.ProblemCategories = problemCategories
-
 	var testCases []*TestCase
 	for _, testCaseStr := range testCasesStr {
 		//testCase{"input":"1 2\n","output":"3"}
 		testCaseMap := make(map[string]string, 0)
 		json.Unmarshal([]byte(testCaseStr), &testCaseMap)
 		testCase := TestCase{
-			Identity: utils.GetUUID(),
-			Input:    testCaseMap["input"],
-			Output:   testCaseMap["output"],
+			Identity:        utils.GetUUID(),
+			ProblemIdentity: data.Identity,
+			Input:           testCaseMap["input"],
+			Output:          testCaseMap["output"],
 		}
 		testCases = append(testCases, &testCase)
 	}
+
 	data.TestCases = testCases
 
-	DB.Create(&data)
+	err = DB.Create(&data).Error
+	if err != nil {
+		return nil, err
+	}
 	return data.Identity, nil
 }
 

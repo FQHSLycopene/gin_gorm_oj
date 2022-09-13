@@ -81,36 +81,6 @@ func AddProblem(c *gin.Context) {
 		return
 	}
 
-	//problemIdentity := data.(string)
-	//
-	////问题分类处理
-	//for _, categoryIdentity := range categoryIdentities {
-	//	_, err := models.AddProblemCategory(problemIdentity, categoryIdentity)
-	//	if err != nil {
-	//		c.JSON(200, gin.H{
-	//			"code": 400,
-	//			"msg":  err.Error(),
-	//			"data": nil,
-	//		})
-	//		return
-	//	}
-	//}
-	//
-	////问题测试用例处理
-	//for _, testCase := range testCases {
-	//	//testCase{"input":"1 2\n","output":"3"}
-	//	testCaseMap := make(map[string]string, 0)
-	//	json.Unmarshal([]byte(testCase), &testCaseMap)
-	//	_, err := models.AddTestCase(problemIdentity, testCaseMap["input"], testCaseMap["output"])
-	//	if err != nil {
-	//		c.JSON(200, gin.H{
-	//			"code": 400,
-	//			"msg":  err.Error(),
-	//			"data": nil,
-	//		})
-	//		return
-	//	}
-	//}
 	c.JSON(200, gin.H{
 		"data": data,
 	})

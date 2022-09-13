@@ -114,9 +114,9 @@ func GetCode(email string) (string, error) {
 func EmailIsExist(email string) (bool, error) {
 	var total int64 = 0
 	//user := UserBasic{}
-	err := DB.Select("email").Where("mail = ?", email).First(&UserBasic{}).Count(&total).Error
+	err := DB.Select("mail").Where("mail = ?", email).Find(&UserBasic{}).Count(&total).Error
 	if err != nil {
-		return false, nil
+		return false, err
 	}
 	if total == 1 {
 		return true, nil
