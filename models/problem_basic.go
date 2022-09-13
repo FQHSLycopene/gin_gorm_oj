@@ -1,24 +1,30 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"gin_gorm_oj/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 type ProblemBasic struct {
-	gorm.Model
-	Identity          string             `gorm:"column:identity;type:varchar(36)" json:"identity"`                          //问题唯一表示
-	ProblemCategories []*ProblemCategory `gorm:"foreignKey:problem_identity;references:identity" json:"problem_categories"` //关联问题分类表
-	TestCases         []*TestCase        `gorm:"foreignKey:problem_identity;references:identity" json:"test_cases"`
-	Title             string             `gorm:"column:title;type:varchar(255)" json:"title"` //文章标题
-	Content           string             `gorm:"column:content;type:text" json:"content"`     //
+	ID                uint `gorm:"primaryKey"`
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	DeletedAt         gorm.DeletedAt     `gorm:"index"`
+	Identity          string             `gorm:"index;not null;column:identity;type:varchar(36)" json:"identity"` //问题唯一表示
+	Title             string             `gorm:"column:title;type:varchar(255)" json:"title"`                     //文章标题
+	Content           string             `gorm:"column:content;type:text" json:"content"`                         //
 	PassNum           int                `gorm:"column:pass_num;type:int" json:"pass_num"`
 	TotalNum          int                `gorm:"column:total_num;type:int" json:"total_num"`
-	MaxRuntime        int                `gorm:"column:max_runtime;type:int(11)" json:"max_runtime"` //最大运行时长
-	MaxMem            int                `gorm:"column:max_mem;type:int(11)" json:"max_mem"`         //最大运行内存
+	MaxRuntime        int                `gorm:"column:max_runtime;type:int(11)" json:"max_runtime"`                       //最大运行时长
+	MaxMem            int                `gorm:"column:max_mem;type:int(11)" json:"max_mem"`                               //最大运行内存
+	ProblemCategories []*ProblemCategory `gorm:"foreignKey:ProblemIdentity;references:Identity" json:"problem_categories"` //关联问题分类表
+	TestCases         []*TestCase        `gorm:"foreignKey:ProblemIdentity;references:Identity" json:"test_cases"`
 }
 
 func (table *ProblemBasic) TableName() string {
@@ -53,7 +59,7 @@ func GetProblemList(pageStr, sizeStr, keyword, categoryIdentity string) (interfa
 	}, nil
 }
 
-func AddProblem(title, content, maxRuntimeStr, maxMemoryStr string) (interface{}, error) {
+func AddProblem(title, content, maxRuntimeStr, maxMemoryStr string, problemCategoriesStr, testCasesStr []string) (interface{}, error) {
 	maxRuntime, err := strconv.Atoi(maxRuntimeStr)
 	if err != nil {
 		return nil, err
@@ -69,6 +75,34 @@ func AddProblem(title, content, maxRuntimeStr, maxMemoryStr string) (interface{}
 		MaxMem:     maxMemory,
 		MaxRuntime: maxRuntime,
 	}
+
+	//问题分类处理
+	var problemCategories []*ProblemCategory
+	for _, problemCategoryStr := range problemCategoriesStr {
+		problemCategory := ProblemCategory{
+			ProblemIdentity:  data.Identity,
+			CategoryIdentity: problemCategoryStr,
+		}
+		problemCategories = append(problemCategories, &problemCategory)
+		fmt.Println(problemCategory)
+	}
+
+	data.ProblemCategories = problemCategories
+
+	var testCases []*TestCase
+	for _, testCaseStr := range testCasesStr {
+		//testCase{"input":"1 2\n","output":"3"}
+		testCaseMap := make(map[string]string, 0)
+		json.Unmarshal([]byte(testCaseStr), &testCaseMap)
+		testCase := TestCase{
+			Identity: utils.GetUUID(),
+			Input:    testCaseMap["input"],
+			Output:   testCaseMap["output"],
+		}
+		testCases = append(testCases, &testCase)
+	}
+	data.TestCases = testCases
+
 	DB.Create(&data)
 	return data.Identity, nil
 }

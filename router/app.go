@@ -30,5 +30,8 @@ func Router() *gin.Engine {
 	r.GET("/Submit", service.GetSubmitList)
 	//管理员私有方法
 	r.POST("/Problem", service.AddProblem)
+
+	//测试方法
+	r.POST("/TestHeader", service.TestHeader)
 	return r
 }

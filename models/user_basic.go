@@ -10,14 +10,17 @@ import (
 )
 
 type UserBasic struct {
-	gorm.Model
-	Identity         string `gorm:"column:identity;type:varchar(36)" json:"identity"` //用户的唯一标识
-	Name             string `gorm:"column:name;type:varchar(100)" json:"name"`
-	Password         string `gorm:"column:password;type:varchar(32)" json:"password"`
-	Phone            string `gorm:"column:phone;type:varchar(20)" json:"phone"`
-	Mail             string `gorm:"column:mail;type:varchar(100)" json:"mail"`
-	FinishProblemNum int64  `gorm:"column:finish_problem_num;type:int(11)" json:"finish_problem_num"`
-	SubmitNum        int64  `gorm:"column:submit_num;type:int(11)" json:"submit_num"`
+	ID               uint `gorm:"primaryKey"`
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	DeletedAt        gorm.DeletedAt `gorm:"index"`
+	Identity         string         `gorm:"index;not null;column:identity;type:varchar(36)" json:"identity"` //用户的唯一标识
+	Name             string         `gorm:"column:name;type:varchar(100)" json:"name"`
+	Password         string         `gorm:"column:password;type:varchar(32)" json:"password"`
+	Phone            string         `gorm:"column:phone;type:varchar(20)" json:"phone"`
+	Mail             string         `gorm:"column:mail;type:varchar(100)" json:"mail"`
+	FinishProblemNum int64          `gorm:"column:finish_problem_num;type:int(11)" json:"finish_problem_num"`
+	SubmitNum        int64          `gorm:"column:submit_num;type:int(11)" json:"submit_num"`
 }
 
 func (table *UserBasic) TableName() string {
@@ -111,9 +114,9 @@ func GetCode(email string) (string, error) {
 func EmailIsExist(email string) (bool, error) {
 	var total int64 = 0
 	//user := UserBasic{}
-	err := DB.Where("mail = ?", email).First(&UserBasic{}).Count(&total).Error
+	err := DB.Select("email").Where("mail = ?", email).First(&UserBasic{}).Count(&total).Error
 	if err != nil {
-		return false, err
+		return false, nil
 	}
 	if total == 1 {
 		return true, nil

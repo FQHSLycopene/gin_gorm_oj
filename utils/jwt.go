@@ -6,15 +6,15 @@ var mySigningKey = []byte("gin_gorm_oj")
 
 type MyClaims struct {
 	jwt.RegisteredClaims
-	name     string
-	identity string
+	UserName string
+	Identity string
 }
 
 func GenerateToken(identity, name string) (string, error) {
 
 	c := MyClaims{
-		name:     name,
-		identity: identity,
+		UserName: name,
+		Identity: identity,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	tokenString, err := token.SignedString(mySigningKey)
@@ -25,7 +25,7 @@ func GenerateToken(identity, name string) (string, error) {
 }
 
 //解析Token
-func TestAnalyseToken(tokenString string) (*MyClaims, error) {
+func AnalyseToken(tokenString string) (*MyClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return mySigningKey, nil
 	})

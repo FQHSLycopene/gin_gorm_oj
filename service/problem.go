@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gin_gorm_oj/define"
 	"gin_gorm_oj/models"
+	"gin_gorm_oj/utils"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 // @BasePath /api/v1
@@ -41,6 +41,15 @@ func GetProblemList(c *gin.Context) {
 	})
 }
 
+func TestHeader(c *gin.Context) {
+	token := c.GetHeader("token")
+	analyseToken, err := utils.AnalyseToken(token)
+	if err != nil {
+
+	}
+	fmt.Println(analyseToken)
+}
+
 // AddProblem
 // @Tags 管理员私有方法
 // @Summary 问题增加
@@ -58,10 +67,11 @@ func AddProblem(c *gin.Context) {
 	content := c.PostForm("content")
 	maxRuntime := c.PostForm("max_runtime")
 	maxMemory := c.PostForm("max_memory")
-	categoryIdentitiesStr := c.PostForm("category_identities")
-	//testCases := c.PostForm("test_cases")
+	categoryIdentities := c.PostFormArray("category_identities")
+	testCases := c.PostFormArray("test_cases")
 
-	data, err := models.AddProblem(title, content, maxRuntime, maxMemory)
+	//问题处理
+	data, err := models.AddProblem(title, content, maxRuntime, maxMemory, categoryIdentities, testCases)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 400,
@@ -70,19 +80,37 @@ func AddProblem(c *gin.Context) {
 		})
 		return
 	}
-	problemIdentity := data.(string)
-	categoryIdentities := strings.Split(categoryIdentitiesStr, ",")
-	for _, categoryIdentity := range categoryIdentities {
-		_, err := models.AddProblemCategory(problemIdentity, categoryIdentity)
-		if err != nil {
-			c.JSON(200, gin.H{
-				"code": 400,
-				"msg":  err.Error(),
-				"data": nil,
-			})
-			return
-		}
-	}
+
+	//problemIdentity := data.(string)
+	//
+	////问题分类处理
+	//for _, categoryIdentity := range categoryIdentities {
+	//	_, err := models.AddProblemCategory(problemIdentity, categoryIdentity)
+	//	if err != nil {
+	//		c.JSON(200, gin.H{
+	//			"code": 400,
+	//			"msg":  err.Error(),
+	//			"data": nil,
+	//		})
+	//		return
+	//	}
+	//}
+	//
+	////问题测试用例处理
+	//for _, testCase := range testCases {
+	//	//testCase{"input":"1 2\n","output":"3"}
+	//	testCaseMap := make(map[string]string, 0)
+	//	json.Unmarshal([]byte(testCase), &testCaseMap)
+	//	_, err := models.AddTestCase(problemIdentity, testCaseMap["input"], testCaseMap["output"])
+	//	if err != nil {
+	//		c.JSON(200, gin.H{
+	//			"code": 400,
+	//			"msg":  err.Error(),
+	//			"data": nil,
+	//		})
+	//		return
+	//	}
+	//}
 	c.JSON(200, gin.H{
 		"data": data,
 	})

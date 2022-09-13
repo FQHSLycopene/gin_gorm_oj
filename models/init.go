@@ -16,7 +16,7 @@ func InitDB() *gorm.DB {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 	}
-	//db.AutoMigrate(&ProblemBasic{}, &CategoryBasic{}, &ProblemCategory{})
+	db.AutoMigrate(&ProblemBasic{}, &UserBasic{}, &CategoryBasic{}, &SubmitBasic{}, &ProblemCategory{}, &TestCase{})
 	return db
 }
 func InitRedisDB() *redis.Client {
